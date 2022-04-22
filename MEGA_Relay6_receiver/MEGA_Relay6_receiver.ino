@@ -16,12 +16,11 @@ void setup() {
   }
 
   Serial2_RX.setInterval(100,[](){
-    String esp32_cmd = Serial2.readStringUntil('\n');
-    if(!esp32_cmd.startsWith("SW")) return;
-    uint8_t cmd    =  esp32_cmd.substring(2).toInt();
-    uint8_t pin_id =  cmd/10;
-    bool    state  =  cmd%10? RELAY_ON : RELAY_OFF;
-    if(pin_id < 6 ) digitalWrite(relay_pin[ pin_id ],  state);
+    uint8_t sw3d_state = Serial2.readStringUntil('\n').toInt();
+    if(sw3d_state == 0) return;
+    for(int i=0; i< 6; i++){
+      digitalWrite( relay_pin[i], bitRead(sw3d_state, i) ? RELAY_ON : RELAY_OFF);
+    }
   });
 }
 
